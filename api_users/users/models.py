@@ -55,3 +55,4 @@ class Subscribe(models.Model):
         on_delete=models.CASCADE,
         related_name='followers'
     )
+    recipes_limit = models.PositiveSmallIntegerField(_('recipes limit'), default=0)

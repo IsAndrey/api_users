@@ -112,6 +112,16 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
+DJOSER = {
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly']
+    },
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserSerializer'
+    }
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
