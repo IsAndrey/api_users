@@ -9,15 +9,19 @@ from .validators import username_validator
 MAX_LENGTH_NAME = 150
 MAX_LENGTH_MAIL = 254
 
+
 class CharField(models.CharField):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        kwargs['help_text'] = _(f'Required. {MAX_LENGTH_NAME} characters or fewer.')
+        kwargs['help_text'] = _(
+            f'Required. {MAX_LENGTH_NAME} characters or fewer.'
+        )
         super().__init__(*args, **kwargs)
+
 
 class User(AbstractUser):
     email = models.EmailField(
         _('email address'),
-            max_length=MAX_LENGTH_MAIL,
+        max_length=MAX_LENGTH_MAIL,
         unique=True,
         help_text=_(f'Required. {MAX_LENGTH_MAIL} characters or fewer.'),
         error_messages={
@@ -38,3 +42,16 @@ class User(AbstractUser):
     password = CharField(_('password'), max_length=MAX_LENGTH_NAME)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
+
+class Subscribe(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='authors'
+    )
+    follower = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='followers'
+    )
