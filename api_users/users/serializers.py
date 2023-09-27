@@ -1,7 +1,7 @@
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 from djoser.conf import settings
 from rest_framework import serializers
-from rest_framework.validators import qs_exists, qs_filter
+from rest_framework.validators import qs_exists, qs_filter, UniqueTogetherValidator
 
 from .models import User, Subscribe
 
@@ -21,3 +21,16 @@ class UserSerializer(DjoserUserSerializer):
     def get_is_subscribed(self, author):
         follower = self.context['request'].user
         return qs_exists(qs_filter(Subscribe.objects.all(), author=author, follower=follower))
+
+
+class SubcribeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Subscribe
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=('author', 'follower')
+            ),
+        ]

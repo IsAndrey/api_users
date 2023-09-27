@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 from .validators import username_validator
+from .validators import CHECK_UNIQUE_SUBSCRIBE, CHECK_SELF_SUBSCRIBE
 
 
 MAX_LENGTH_NAME = 150
@@ -12,6 +13,7 @@ MAX_LENGTH_MAIL = 254
 
 class CharField(models.CharField):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        kwargs['blank'] = False
         kwargs['help_text'] = _(
             f'Required. {MAX_LENGTH_NAME} characters or fewer.'
         )
@@ -56,3 +58,9 @@ class Subscribe(models.Model):
         related_name='followers'
     )
     recipes_limit = models.PositiveSmallIntegerField(_('recipes limit'), default=0)
+
+    class Meta:
+        constraints = [
+            CHECK_SELF_SUBSCRIBE,
+            CHECK_UNIQUE_SUBSCRIBE
+        ]
