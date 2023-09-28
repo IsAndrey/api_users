@@ -3,6 +3,7 @@ import re
 from rest_framework.exceptions import ValidationError
 from django.db.models import CheckConstraint, Q, F, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import format_lazy as _f
 
 
 REGEX_FOR_USERNAME = r'^[\w.@+-]+\Z'
@@ -20,26 +21,6 @@ CHECK_SELF_SUBSCRIBE = CheckConstraint(
     name='check_self_subscribe'
 )
 
-class CheckEqualFieldsValidator():
-    """
-    Проверка совпадения значения полей сериализатора. Не нужен.
-    """
-    message = _('Поля {field_names} Не должны совпадать.')
-    missing_message = _('This field is required.')
-    requires_context = True
-
-    def __call__(self, attrs, serializer):
-        self.enforce_required_fields(attrs, serializer)
-
-        # Ignore validation if any field is None
-        checked_values = [
-            value for field, value in attrs.items() if (field in self.fields) and (value is not None)
-        ]
-        # Добавить условие на максимальное вхождение в checked_values больше 1
-        field_names = ', '.join(self.fields)
-        message = self.message.format(field_names=field_names)
-        raise ValidationError(message, code='unique')
-
 def regex_validator(value, regex, code=''):
     """Проверка на соответствие регулярному выражению."""
     s_value = str(value)
@@ -49,10 +30,10 @@ def regex_validator(value, regex, code=''):
             char = s_value[i]
             if not re_compile.search(char):
                 break
-        raise ValidationError(
-            f'Символ {char} в '
-            f'строке {s_value} не соответствует '
-            f'шаблону {regex}',
+        raise ValidationError(_f(
+            'The character {char} in the string {s_value} does not match the pattern {regex}',  # noqa
+            char=char, s_value=s_value, reqex=regex
+            ),
             code
         )
 

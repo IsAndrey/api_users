@@ -2,6 +2,7 @@ from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import format_lazy as _f
 
 from .validators import username_validator
 from .validators import CHECK_UNIQUE_SUBSCRIBE, CHECK_SELF_SUBSCRIBE
@@ -14,8 +15,9 @@ MAX_LENGTH_MAIL = 254
 class CharField(models.CharField):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         kwargs['blank'] = False
-        kwargs['help_text'] = _(
-            f'Required. {MAX_LENGTH_NAME} characters or fewer.'
+        kwargs['help_text'] = _f(
+            'Required. {max_length} characters or fewer.',
+            max_length=MAX_LENGTH_NAME
         )
         super().__init__(*args, **kwargs)
 
@@ -25,7 +27,10 @@ class User(AbstractUser):
         _('email address'),
         max_length=MAX_LENGTH_MAIL,
         unique=True,
-        help_text=_(f'Required. {MAX_LENGTH_MAIL} characters or fewer.'),
+        help_text=_f(
+            'Required. {max_length} characters or fewer.',
+            max_length=MAX_LENGTH_MAIL
+        ),
         error_messages={
             'unique': _("A user with that email already exists."),
         }
