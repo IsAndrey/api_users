@@ -7,6 +7,7 @@ from django.utils.text import format_lazy as _f
 
 
 REGEX_FOR_USERNAME = r'^[\w.@+-]+\Z'
+DEAULT_RECIPES_LIMIT = 10
 
 
 # Проверка уникальности подписки.

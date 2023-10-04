@@ -1,0 +1,84 @@
+from django.utils.translation import gettext_lazy as _
+from djoser.serializers import UserSerializer as DjoserUserSerializer
+from djoser.conf import settings
+from rest_framework import serializers
+from rest_framework.validators import qs_exists, qs_filter, UniqueTogetherValidator  # noqa
+from rest_framework.exceptions import ValidationError
+
+from .models import User, Subscribe
+from .validators import DEAULT_RECIPES_LIMIT
+
+
+class UserSerializer(DjoserUserSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = tuple(User.REQUIRED_FIELDS) + (
+            settings.USER_ID_FIELD,
+            settings.LOGIN_FIELD,
+            'is_subscribed'
+        )
+        read_only_fields = (settings.LOGIN_FIELD,)
+    
+    def get_is_subscribed(self, author):
+        follower = self.context['request'].user
+        return qs_exists(qs_filter(
+            Subscribe.objects.all(), author=author, follower=follower
+        ))
+
+
+class UserRecipesSerializer(UserSerializer):
+    recipes_count = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_limit = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = tuple(User.REQUIRED_FIELDS) + (
+            settings.USER_ID_FIELD,
+            settings.LOGIN_FIELD,
+            'is_subscribed',
+            'recipes_count',
+            'recipes',
+            'recipes_limit'
+        )
+        read_only_fields = (settings.LOGIN_FIELD,)
+
+    def get_recipes_count(self, instance):
+        return 0
+    
+    def get_recipes(self, instance):
+        return []
+    
+    def get_recipes_limit(self, instance):
+        return self.context['request'].query_params.get('recipes_limit', DEAULT_RECIPES_LIMIT)
+            
+
+class SubcribeSerializer(serializers.ModelSerializer):
+    """Для записи подписок пользователя."""
+
+    class Meta:
+        model = Subscribe
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=('author', 'follower')
+            ),
+        ]
+
+    def validate(self, attrs):
+        author = attrs.get('author', None)
+        follower = attrs.get('follower', None)
+        if not isinstance(author, type(follower)):
+            error_message = _(
+                'Fields follower and author must be of the same type.'
+            )
+            raise ValidationError(error_message, code='unique')
+        elif author == follower:
+            error_message = _(
+                'Fields follower and author should not be equal.'
+            )
+            raise ValidationError(error_message, code='unique')
+        return super().validate(attrs)
