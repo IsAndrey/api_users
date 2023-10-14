@@ -4,18 +4,12 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy as _f
 
 from .validators import (
-    CHECK_SELF_SUBSCRIBE,
-    CHECK_UNIQUE_SUBSCRIBE,
-    DEFAULT_COOKING_TIME,
-    LENGTH_COLOR_07,
-    LENGTH_MAIL_254,
-    LENGTH_NAME_150,
-    LENGTH_NAME_200,
-    color_validator,
-    cooking_time_validator,
-    default_name,
-    default_recipe_image,
-    username_validator
+    CHECK_SELF_SUBSCRIBE, CHECK_UNIQUE_SUBSCRIBE,
+    CHECK_UNIQUE_FAVORITE, CHECK_UNIQUE_SHOPPING,
+    DEFAULT_AMOUNT, DEFAULT_COOKING_TIME,
+    LENGTH_COLOR_07, LENGTH_MAIL_254, LENGTH_NAME_150, LENGTH_NAME_200,
+    amount_validator, color_validator, cooking_time_validator,
+    default_name, username_validator
 )
 
 
@@ -108,26 +102,32 @@ class NameList(models.Model):
 
 class Tag(NameList):
     """Тэги."""
-    slug = models.SlugField(_('slug'), max_length=LENGTH_NAME_200, unique=True)
-    color = models.CharField(_('color'), max_length=LENGTH_COLOR_07, validators=[color_validator])
+    slug = models.SlugField(
+        _('slug'), max_length=LENGTH_NAME_200, unique=True
+    )
+    color = models.CharField(
+        _('color'), max_length=LENGTH_COLOR_07, validators=[color_validator]
+    )
 
 
 class Ingridient(NameList):
     """Ингридиенты."""
-    measurement_unit = models.CharField200(_('measurement unit'))
+    measurement_unit = CharField200(_('measurement unit'))
 
 
 class Recipe(NameList):
     """Рецепты."""
     author = models.ForeignKey(to=User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(to=Tag)
-    ingridients = models.ManyToManyField(to=Ingridient, through='RecipeIngridient')
+    ingridients = models.ManyToManyField(
+        to=Ingridient, through='RecipeIngridient'
+    )
     text = CharField200(_('text'))
     cooking_time = models.SmallIntegerField(
         default=DEFAULT_COOKING_TIME,
         validators=[cooking_time_validator]
     )
-    image = models.URLField(default=default_recipe_image)
+    image = models.ImageField(upload_to='recipes/images/')
 
 
 class RecipeIngridient(models.Model):
@@ -142,18 +142,22 @@ class RecipeIngridient(models.Model):
         on_delete=models.CASCADE,
         related_name='recipes'
     )
+    amount = models.SmallIntegerField(
+        _('amount'), default=DEFAULT_AMOUNT, validators=[amount_validator]
+    )
+
+    class Meta:
+        constraints = []
 
 
 class UserRecipe(models.Model):
     """Абстрактный список рецептов пользователя."""
     user = models.ForeignKey(
         to=User,
-        on_delete=models.CASCADE,
-        related_name='users')
+        on_delete=models.CASCADE)
     recipe = models.ForeignKey(
         to=Recipe,
-        on_delete=models.CASCADE,
-        related_name='recipes')
+        on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -161,9 +165,17 @@ class UserRecipe(models.Model):
 
 class ShoppingCart(UserRecipe):
     """Корзина покупок."""
-    ...
+
+    class Meta:
+        constraints = [
+            CHECK_UNIQUE_SHOPPING
+        ]
 
 
 class FavoriteList(UserRecipe):
     """Любимые рецепты."""
-    ...
+
+    class Meta:
+        constraints = [
+            CHECK_UNIQUE_FAVORITE
+        ]

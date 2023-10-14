@@ -10,13 +10,20 @@ from rest_framework.exceptions import ValidationError
 REGEX_FOR_USERNAME = r'^[\w.@+-]+\Z'
 DEFAULT_LIST_LIMIT = 10
 DEFAULT_COOKING_TIME = 1
+DEFAULT_AMOUNT = 1
 LENGTH_NAME_150 = 150
 LENGTH_NAME_200 = 200
 LENGTH_MAIL_254 = 254
 MAX_LENGTH_SLUG = 200
 LENGTH_COLOR_07 = 7
-LENGTH_COLOR_03 = 3
+LENGTH_COLOR_04 = 4
 
+
+# Проверка уникальности ингридиента в рецепте
+CHECK_UNUQUE_INGRIDIENT = UniqueConstraint(
+    fields=['recipe', 'ingridient'],
+    name = _('unique ingridient in recipe')
+)
 
 # Проверка уникальности подписки.
 CHECK_UNIQUE_SUBSCRIBE = UniqueConstraint(
@@ -30,26 +37,38 @@ CHECK_SELF_SUBSCRIBE = CheckConstraint(
     name=_('check self subscribe')
 )
 
-# Проверка уникальности рецепта.
-CHECK_UNIQUE_RECIPE = UniqueConstraint(
+# Проверка уникальности рецепта в избранном.
+CHECK_UNIQUE_FAVORITE = UniqueConstraint(
     fields=['user', 'recipe'],
-    name=_('unique recipe')
+    name=_('unique recipe in favorite')
 )
+
+# Проверка уникальности рецепта в корзине покупок.
+CHECK_UNIQUE_SHOPPING = UniqueConstraint(
+    fields=['user', 'recipe'],
+    name=_('unique recipe in shopping')
+)
+
+def amount_validator(value):
+    if value < 0:
+        raise ValidationError(_f(
+            'The amount of ingridient should not be less than {value}.',
+            value=0
+            ),
+            _('not correct amount')
+        )
 
 def color_validator(value):
     ...
 
 def cooking_time_validator(value):
-    if value < DEFAULT_COOKING_TIME:
+    if value < 0:
         raise ValidationError(_f(
             'The cooking time should not be less than {value}.',
-            value=value
+            value=0
             ),
             _('not correct cooking time')
         )
-
-def default_recipe_image():
-    return static('images/default_recipe.jpg')
 
 def default_name():
     return ''

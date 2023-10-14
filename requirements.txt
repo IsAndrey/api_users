@@ -2,3 +2,5 @@ Django==3.2.16
 djangorestframework==3.12.4
 uritemplate==4.1.1
 djoser==2.2.0
+Pillow==10.0.0
+django-filter==23.3

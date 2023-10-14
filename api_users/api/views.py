@@ -1,4 +1,5 @@
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserViewSet
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -7,15 +8,14 @@ from rest_framework.response import Response
 from recipes.models import (
     FavoriteList, Ingridient, Recipe, ShoppingCart, Subscribe, Tag, User
 )
-from recipes.validators import (
-    DEFAULT_LIST_LIMIT, CHECK_UNIQUE_RECIPE, CHECK_UNIQUE_SUBSCRIBE
-)
+from recipes.validators import DEFAULT_LIST_LIMIT
 from .serializers import (
-    FavoriteListSerializer, IngridientSerializer, RecipeSerializer, 
+    FavoriteListSerializer, IngridientSerializer, ReadRecipeSerializer, 
     ShoppingCartSerializer, SimpleRecipeSerializer, SubcribeSerializer,
-    TagSerializer, UserRecipesSerializer
+    TagSerializer, UserRecipesSerializer, WriteRecipeSerializer
 )
-from .pagination import UsersPagination
+from .filters import RecipesFilters
+from .pagination import PageNumberPagination
 
 
 class UserViewSet(DjoserViewSet):
@@ -23,7 +23,7 @@ class UserViewSet(DjoserViewSet):
     Переопределяем вьюсет пользователей для добавления подписок
     и пагинации.
     """
-    pagination_class = UsersPagination
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         if self.action == 'subscriptions':
@@ -44,10 +44,6 @@ class UserViewSet(DjoserViewSet):
     def subscribe(self, request, *args, **kwargs):
         if request.method == "POST":
             author = get_object_or_404(User, id=kwargs.get('id', 0))
-            recipes_limit = request.query_params.get(
-                'recipes_limit',
-                DEFAULT_LIST_LIMIT
-            )
             data = {
                 'author': author.id,
                 'follower': request.user.id
@@ -55,42 +51,42 @@ class UserViewSet(DjoserViewSet):
             serializer = SubcribeSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            context = {'request': request}
             user_recipes_serializer = UserRecipesSerializer(
-                instance=author
+                instance=author, context=context
             )
             return Response(
                 user_recipes_serializer.data,
                 status=status.HTTP_201_CREATED
             )
         elif request.method == "DELETE":
-            # Проверим ограничения модели Subscribe
-            has_unique_constraint = (
-                Subscribe.Meta.constraints and
-                CHECK_UNIQUE_SUBSCRIBE in Subscribe.Meta.constraints
+            subscribe = get_object_or_404(
+                Subscribe,
+                author=kwargs.get('id', 0),
+                follower=request.user.id
             )
-            if has_unique_constraint:
-                subscribe = get_object_or_404(
-                    Subscribe,
-                    author=kwargs.get('id', 0),
-                    follower=request.user.id
-                )
-                subscribe.delete()
-            else:
-                list = get_list_or_404(
-                    Subscribe,
-                    author=kwargs.get('id', 0),
-                    follower=request.user.id
-                )
-                for subscribe in list:
-                    subscribe.delete()
+            subscribe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели Recipe."""
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
+    pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = RecipesFilters
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update'):
+            return WriteRecipeSerializer
+        return ReadRecipeSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+    
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
 
     def perform_action(self, request, **kwargs):
         instance_model = Recipe
@@ -119,26 +115,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             Response(read_serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
-            has_unique_constraint = (
-                list_model.Meta.constraints and
-                CHECK_UNIQUE_RECIPE in list_model.Meta.constraints
+            unit = get_object_or_404(
+                list_model,
+                user=request.user.id,
+                recipe=kwargs.get('id', 0)
             )
-            if has_unique_constraint:
-                unit = get_object_or_404(
-                    list_model,
-                    user=request.user.id,
-                    recipe=kwargs.get('id', 0)
-                )
-                Response(status=status.HTTP_204_NO_CONTENT)
-            else:
-                list = get_list_or_404(
-                    list_model,
-                    user=request.user.id,
-                    recipe=kwargs.get('id', 0)
-                )
-                for unit in list:
-                    unit.delete()
-                Response(status=status.HTTP_204_NO_CONTENT)
+            unit.delete()
+            Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(['post', 'delete'], detail=True)
     def shopping_cart(self, request, *args, **kwargs):
