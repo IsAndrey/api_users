@@ -20,8 +20,7 @@ from .pagination import PageNumberPagination
 
 class UserViewSet(DjoserViewSet):
     """
-    Переопределяем вьюсет пользователей для добавления подписок
-    и пагинации.
+    Вьюсет пользователей с подписоками и пагинацией.
     """
     pagination_class = PageNumberPagination
 

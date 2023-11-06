@@ -4,10 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy as _f
 
 from .validators import (
-    CHECK_SELF_SUBSCRIBE, CHECK_UNIQUE_SUBSCRIBE,
-    CHECK_UNIQUE_FAVORITE, CHECK_UNIQUE_SHOPPING,
-    DEFAULT_AMOUNT, DEFAULT_COOKING_TIME,
-    LENGTH_COLOR_07, LENGTH_MAIL_254, LENGTH_NAME_150, LENGTH_NAME_200,
+    CHECK_UNUQUE_INGRIDIENT, CHECK_SELF_SUBSCRIBE, CHECK_UNIQUE_SUBSCRIBE,
+    CHECK_UNIQUE_FAVORITE, CHECK_UNIQUE_SHOPPING, DEFAULT_AMOUNT,
+    DEFAULT_COOKING_TIME, LENGTH_COLOR_07, LENGTH_MAIL_254, LENGTH_NAME_150,
+    LENGTH_NAME_200,
     amount_validator, color_validator, cooking_time_validator,
     default_name, username_validator
 )
@@ -147,7 +147,7 @@ class RecipeIngridient(models.Model):
     )
 
     class Meta:
-        constraints = []
+        constraints = [CHECK_UNUQUE_INGRIDIENT]
 
 
 class UserRecipe(models.Model):

@@ -3,7 +3,7 @@ import re
 from django.db.models import CheckConstraint, Q, F, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy as _f
-from django.templatetags.static import static
+# from django.templatetags.static import static
 from rest_framework.exceptions import ValidationError
 
 
@@ -47,6 +47,12 @@ CHECK_UNIQUE_FAVORITE = UniqueConstraint(
 CHECK_UNIQUE_SHOPPING = UniqueConstraint(
     fields=['user', 'recipe'],
     name=_('unique recipe in shopping')
+)
+
+# Проверка уникальности ингридиента в рецепте.
+CHECK_UNUQUE_INGRIDIENT = UniqueConstraint(
+    fields=['ingridient', 'recipe'],
+    name=_('unique ingridient in recipe')
 )
 
 def amount_validator(value):
