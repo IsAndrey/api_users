@@ -1,22 +1,8 @@
 from django.contrib import admin
 
 from .models import (
-    Tag, Ingridient, Recipe, Subscribe, FavoriteList, ShoppingCart, User
+    Tag, Ingridient, Recipe, Subscribe, FavoriteList, ShoppingCart, User, MeasurementUnit, RecipeIngridient
 )
-
-class TagInLine(admin.StackedInline):
-    model = Tag
-    extra = 0
-
-
-class IngridientInLine(admin.StackedInline):
-    model = Ingridient
-    extra = 0
-
-
-class SubscribeInLine(admin.StackedInline):
-    model = Subscribe
-    extra = 0
 
 
 class FavoriteListInLine(admin.StackedInline):
@@ -29,11 +15,27 @@ class ShoppingCartInLine(admin.StackedInline):
     extra = 0
 
 
+class SubscribeInLine(admin.StackedInline):
+    model = Subscribe
+    extra = 0
+    fk_name = 'author'
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    inlines = (FavoriteListInLine, ShoppingCartInLine)
+    inlines = (FavoriteListInLine, ShoppingCartInLine, SubscribeInLine)
+
+
+class RecipeIngridientInLine(admin.StackedInline):
+    model = RecipeIngridient
+    extra = 0
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    inlines = (RecipeIngridientInLine,)
 
 
 admin.site.register(Tag)
 admin.site.register(Ingridient)
-admin.site.register(Recipe)
+admin.site.register(MeasurementUnit)

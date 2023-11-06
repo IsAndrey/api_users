@@ -1,0 +1,209 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-07 01:06+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: .\apps.py:8
+msgid "recipes"
+msgstr "кулинарные рецепты"
+
+#: .\models.py:45
+msgid "email address"
+msgstr "адрес электронной почты"
+
+#: .\models.py:52
+msgid "A user with that email already exists."
+msgstr "Пользователь с такой почтой уже есть."
+
+#: .\models.py:56
+msgid "user name"
+msgstr "имя пользователя"
+
+#: .\models.py:60
+msgid "A user with that username already exists."
+msgstr "Пользователь с таким именем уже есть."
+
+#: .\models.py:63
+msgid "first name"
+msgstr "имя"
+
+#: .\models.py:64
+msgid "last name"
+msgstr "фамилия"
+
+#: .\models.py:65
+msgid "password"
+msgstr "пароль"
+
+#: .\models.py:74
+msgid "subscriptions"
+msgstr "подписки"
+
+#: .\models.py:78 .\models.py:214
+msgid "user"
+msgstr "пользователь"
+
+#: .\models.py:79
+msgid "Users"
+msgstr "Пользователи"
+
+#: .\models.py:91 .\models.py:156
+msgid "author"
+msgstr "автор"
+
+#: .\models.py:97
+msgid "follower"
+msgstr "подписчик"
+
+#: .\models.py:105
+msgid "subscribe"
+msgstr "подписка"
+
+#: .\models.py:106
+msgid "Subscribes"
+msgstr "Подписки"
+
+#: .\models.py:114
+msgid "item name"
+msgstr "наименование"
+
+#: .\models.py:126
+msgid "slug"
+msgstr "слаг"
+
+#: .\models.py:129
+msgid "color"
+msgstr "цвет"
+
+#: .\models.py:133
+msgid "tag"
+msgstr "тэг"
+
+#: .\models.py:134
+msgid "Tags"
+msgstr "Тэги"
+
+#: .\models.py:141 .\models.py:197
+msgid "measurement unit"
+msgstr "единица измерения"
+
+#: .\models.py:142
+msgid "Measurement units"
+msgstr "Единицы измерения"
+
+#: .\models.py:149 .\models.py:182
+msgid "ingridient"
+msgstr "ингредиент"
+
+#: .\models.py:150
+msgid "Ingridients"
+msgstr "Ингредиенты"
+
+#: .\models.py:157
+msgid "tags"
+msgstr "тэги"
+
+#: .\models.py:159
+msgid "ingridients"
+msgstr "ингредиенты"
+
+#: .\models.py:161
+msgid "text"
+msgstr "текст"
+
+#: .\models.py:165
+msgid "cooking time"
+msgstr "время приготовления"
+
+#: .\models.py:168
+msgid "image"
+msgstr "изображение"
+
+#: .\models.py:172 .\models.py:188 .\models.py:219
+msgid "recipe"
+msgstr "кулинарный рецепт"
+
+#: .\models.py:173
+msgid "Recipes"
+msgstr "Кулинарные рецепты"
+
+#: .\models.py:191
+msgid "amount"
+msgstr "количество"
+
+#: .\models.py:202
+msgid "ingridient in recipe"
+msgstr "ингредиент для рецепта"
+
+#: .\models.py:203
+msgid "Ingridients in recipe"
+msgstr "Ингредиенты для рецепта"
+
+#: .\models.py:236
+msgid "recipe in shopping cart"
+msgstr "кулинарный рецепт в списке покупок"
+
+#: .\models.py:237
+msgid "Recipes in shopping cart"
+msgstr "Кулинарные рецепты в списке покупок"
+
+#: .\models.py:247
+msgid "favorite recipe"
+msgstr "любимый кулинарный рецепт"
+
+#: .\models.py:248
+msgid "Favorite recipes"
+msgstr "Любимые кулинарные рецепты"
+
+#: .\validators.py:25 .\validators.py:55
+msgid "unique ingridient in recipe"
+msgstr "дублирование ингредиента в кулинарном рецепте"
+
+#: .\validators.py:31
+msgid "unique subscribe"
+msgstr "дублирование подписки"
+
+#: .\validators.py:37
+msgid "check self subscribe"
+msgstr "проверка подписки на самого себя"
+
+#: .\validators.py:43
+msgid "unique recipe in favorite"
+msgstr "дублирование любимого кулинарного рецепта"
+
+#: .\validators.py:49
+msgid "unique recipe in shopping"
+msgstr "дублирование кулинарного рецепта в списке покупок"
+
+#: .\validators.py:64
+msgid "not correct amount"
+msgstr "не правильное количество"
+
+#: .\validators.py:76
+msgid "not correct cooking time"
+msgstr "не пральное время приготовления"
+
+#: .\validators.py:80
+msgid "name is not set"
+msgstr "наименование имя не задано"
+
+#: .\validators.py:100
+msgid "not correct username"
+msgstr "не правильное имя пользователя"

@@ -3,20 +3,20 @@ import re
 from django.db.models import CheckConstraint, Q, F, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import format_lazy as _f
-# from django.templatetags.static import static
 from rest_framework.exceptions import ValidationError
 
 
-REGEX_FOR_USERNAME = r'^[\w.@+-]+\Z'
-DEFAULT_LIST_LIMIT = 10
-DEFAULT_COOKING_TIME = 1
 DEFAULT_AMOUNT = 1
+DEFAULT_COOKING_TIME = 1
+DEFAULT_LIST_LIMIT = 10
+DEFAULT_MEASUREMENT_UNIT = 1
+LENGTH_COLOR_04 = 4
+LENGTH_COLOR_07 = 7
+LENGTH_MAIL_254 = 254
 LENGTH_NAME_150 = 150
 LENGTH_NAME_200 = 200
-LENGTH_MAIL_254 = 254
 MAX_LENGTH_SLUG = 200
-LENGTH_COLOR_07 = 7
-LENGTH_COLOR_04 = 4
+REGEX_FOR_USERNAME = r'^[\w.@+-]+\Z'
 
 
 # Проверка уникальности ингридиента в рецепте
@@ -77,7 +77,7 @@ def cooking_time_validator(value):
         )
 
 def default_name():
-    return ''
+    return _('name is not set')
 
 def regex_validator(value, regex, code=''):
     """Проверка на соответствие регулярному выражению."""
